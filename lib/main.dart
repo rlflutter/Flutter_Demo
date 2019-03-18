@@ -29,6 +29,9 @@ class MyApp extends StatelessWidget {
 //          child: new RandomWords(),
 //        ),
 //      ),
+      theme: new ThemeData(
+        primaryColor: Colors.white,
+      ),
       home: new RandomWords(),
     );
   }
@@ -51,6 +54,7 @@ class RandomWords extends StatefulWidget {
 class RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
+  final _saved = new Set<WordPair>();
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +65,9 @@ class RandomWordsState extends State<RandomWords> {
     return new Scaffold (
       appBar: new AppBar(
         title: new Text('Startup Name Generator'),
+        actions: <Widget>[
+          new IconButton(icon: new Icon(Icons.list), onPressed: _pushSaved)
+        ],
       ),
       body: _buildSuggestions(),
     );
@@ -73,11 +80,12 @@ class RandomWordsState extends State<RandomWords> {
         // 在偶数行，该函数会为单词对添加一个ListTile row.
         // 在奇数行，该函数会添加一个分割线widget，来分隔相邻的词对。
         itemBuilder: (context,i){
+          final index = i ~/ 2;
           // 在每一列之前，添加一个1像素高的分隔线widget
           if(i.isOdd) return new Divider();
           // 语法 "i ~/ 2" 表示i除以2，但返回值是整形（向下取整），比如i为：1, 2, 3, 4, 5
           // 时，结果为0, 1, 1, 2, 2， 这可以计算出ListView中减去分隔线后的实际单词对数量
-          final index = i ~/ 2;
+
 
           if(index >= _suggestions.length){
             _suggestions.addAll(generateWordPairs().take(10));
@@ -88,11 +96,59 @@ class RandomWordsState extends State<RandomWords> {
   }
 
   Widget _buildRow(WordPair pair) {
+
+    final alreadySaved = _saved.contains(pair);
+
     return new ListTile(
       title: new Text(
         pair.asPascalCase,
         style: _biggerFont,
       ),
+
+      trailing: new Icon(
+        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreadySaved ? Colors.red : null,
+      ),
+
+      onTap: () {
+        // 在Flutter的响应式风格的框架中，调用setState() 会为State对象触发build()方法，从而导致对UI的更新
+        setState(() {
+          if(alreadySaved){
+            _saved.remove(pair);
+          }else{
+            _saved.add(pair);
+          }
+        });
+      },
+    );
+  }
+
+  void _pushSaved() {
+    //新页面的内容在在MaterialPageRoute的builder属性中构建，builder是一个匿名函数。
+    Navigator.of(context).push(
+      new MaterialPageRoute(builder: (context){
+        final tiles = _saved.map((pair) {
+            return new ListTile(
+              title: new Text(
+                pair.asPascalCase,
+                style: _biggerFont,
+              ),
+            );
+          },
+        );
+
+        final divided = ListTile.divideTiles(context: context, tiles: tiles).toList();
+
+        return new Scaffold(
+          appBar: new AppBar(
+            title: new Text('Saved Suggestions'),
+          ),
+
+          body: new ListView(children: divided,),
+
+        );
+
+      })
     );
   }
 }
