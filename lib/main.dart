@@ -5,7 +5,14 @@ import 'package:english_words/english_words.dart';
 //void main() => runApp(new MyApp());
 //void main() => runApp(new MyWidget());
 //void main() => runApp(new ActiveWidget());
-void main() => runApp(new ParentWidget());
+//void main() => runApp(new ParentWidget());
+
+void main() {
+  runApp(new MaterialApp(
+    title: 'my app',
+    home: new MyScaffold(),
+  ));
+}
 
 // 1 继承了 StatelessWidget，这将会使应用本身也成为一个widget
 // 2 Stateless widgets 是不可变的, 这意味着它们的属性不能改变 - 所有的值都是最终的.
@@ -447,3 +454,90 @@ class TapboxB extends StatelessWidget {
     );
   }
 }
+
+
+/**
+ * 基础使用
+ */
+
+class MyScaffold extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Material 是UI呈现的“一张纸”
+    return new Material(
+      child: new Column(
+        children: <Widget>[
+          new MyAppBar(
+            title: new Text(
+              'Example title',
+              style: Theme.of(context).primaryTextTheme.title,
+            ),
+          ),
+          new Expanded(
+              child: new Center(
+                child: new Text(
+                    'Hello, world!'
+                ),
+              )
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MyAppBar extends StatelessWidget {
+  MyAppBar({this.title});
+  final Widget title ;
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new Container(
+      height: 56.0,
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      decoration: BoxDecoration(color: Colors.blue[500]),
+      child: new Row(
+        children: <Widget>[
+          new IconButton(
+              icon: new Icon(Icons.menu),
+              tooltip: 'Navigation menu',
+              onPressed: null
+          ),
+          new Expanded(
+              child: title
+          ),
+          new IconButton(
+              icon: new Icon(Icons.search),
+              tooltip: 'Search',
+              onPressed: null
+          )
+        ],
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
