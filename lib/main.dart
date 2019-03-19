@@ -3,7 +3,8 @@ import 'package:english_words/english_words.dart';
 
 // =>是dart语言单行函数或方法的简写
 //void main() => runApp(new MyApp());
-void main() => runApp(new MyWidget());
+//void main() => runApp(new MyWidget());
+void main() => runApp(new ActiveWidget());
 
 // 1 继承了 StatelessWidget，这将会使应用本身也成为一个widget
 // 2 Stateless widgets 是不可变的, 这意味着它们的属性不能改变 - 所有的值都是最终的.
@@ -319,3 +320,74 @@ class _FavoriteWidgetState extends State<FavoriteWidget>{
   }
 
 }
+
+
+/**
+ * ActiveWidget 交互,自己widget管理自己
+ */
+
+class ActiveWidget extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new MaterialApp(
+      title: 'Flutter Demo',
+      home: new Scaffold(
+        appBar: new AppBar(
+          title: new Text('Flutter Demo'),
+        ),
+        body: new Center(
+          child: new TapboxA(),
+        ),
+      ),
+    );
+  }
+
+}
+
+class TapboxA extends StatefulWidget{
+    TapboxA({Key key}) : super(key: key);
+
+  @override
+  State <StatefulWidget> createState() {
+    // TODO: implement createState
+    return new _TapboxAState();
+  }
+
+}
+
+class _TapboxAState extends State <TapboxA>{
+
+  bool _active = false;
+
+  void _handleTap(){
+    setState(() {
+      _active = !_active;
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new GestureDetector(
+      onTap: _handleTap,
+
+      child: new Container(
+        child: new Center(
+          child: new Text(
+            _active ? 'Active' : 'Inactive',
+            style: new TextStyle(fontSize: 32.0, color: Colors.white),
+          ),
+        ),
+
+        width: 200.0,
+        height: 200.0,
+
+        decoration: new BoxDecoration(
+          color: _active ? Colors.lightGreen[700] : Colors.grey[600],
+        ),
+      ),
+    );
+  }
+
+}
+
