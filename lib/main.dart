@@ -4,7 +4,8 @@ import 'package:english_words/english_words.dart';
 // =>是dart语言单行函数或方法的简写
 //void main() => runApp(new MyApp());
 //void main() => runApp(new MyWidget());
-void main() => runApp(new ActiveWidget());
+//void main() => runApp(new ActiveWidget());
+void main() => runApp(new ParentWidget());
 
 // 1 继承了 StatelessWidget，这将会使应用本身也成为一个widget
 // 2 Stateless widgets 是不可变的, 这意味着它们的属性不能改变 - 所有的值都是最终的.
@@ -274,20 +275,18 @@ class FavoriteWidget extends StatefulWidget {
     // TODO: implement createState
     return new _FavoriteWidgetState();
   }
-
 }
 
-class _FavoriteWidgetState extends State<FavoriteWidget>{
-
+class _FavoriteWidgetState extends State<FavoriteWidget> {
   bool _isFavorited = true;
   int _favoriteCount = 41;
 
-  void _toggleFavorite (){
+  void _toggleFavorite() {
     setState(() {
-      if(_isFavorited){
+      if (_isFavorited) {
         _favoriteCount -= 1;
         _isFavorited = false;
-      }else{
+      } else {
         _favoriteCount += 1;
         _isFavorited = true;
       }
@@ -303,30 +302,28 @@ class _FavoriteWidgetState extends State<FavoriteWidget>{
         new Container(
           padding: new EdgeInsets.all(0.0),
           child: new IconButton(
-              icon: _isFavorited ? new Icon(Icons.star) : new Icon(Icons.star_border),
+              icon: _isFavorited
+                  ? new Icon(Icons.star)
+                  : new Icon(Icons.star_border),
               color: Colors.red[500],
               onPressed: _toggleFavorite),
         ),
         new SizedBox(
-            width: 18.0,
-            child: new Container(
-              child: new Text(
-                  '$_favoriteCount'
-              ),
-            ),
+          width: 18.0,
+          child: new Container(
+            child: new Text('$_favoriteCount'),
+          ),
         ),
       ],
     );
   }
-
 }
-
 
 /**
  * ActiveWidget 交互,自己widget管理自己
  */
 
-class ActiveWidget extends StatelessWidget{
+class ActiveWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -342,35 +339,32 @@ class ActiveWidget extends StatelessWidget{
       ),
     );
   }
-
 }
 
-class TapboxA extends StatefulWidget{
-    TapboxA({Key key}) : super(key: key);
+class TapboxA extends StatefulWidget {
+  TapboxA({Key key}) : super(key: key);
 
   @override
-  State <StatefulWidget> createState() {
+  State<StatefulWidget> createState() {
     // TODO: implement createState
     return new _TapboxAState();
   }
-
 }
 
-class _TapboxAState extends State <TapboxA>{
-
+class _TapboxAState extends State<TapboxA> {
   bool _active = false;
 
-  void _handleTap(){
+  void _handleTap() {
     setState(() {
       _active = !_active;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new GestureDetector(
       onTap: _handleTap,
-
       child: new Container(
         child: new Center(
           child: new Text(
@@ -378,16 +372,78 @@ class _TapboxAState extends State <TapboxA>{
             style: new TextStyle(fontSize: 32.0, color: Colors.white),
           ),
         ),
-
         width: 200.0,
         height: 200.0,
-
         decoration: new BoxDecoration(
           color: _active ? Colors.lightGreen[700] : Colors.grey[600],
         ),
       ),
     );
   }
-
 }
 
+/**
+ * ParentWidget 父widget管理widget的state
+ */
+
+class ParentWidget extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return new _ParentWidgetState();
+  }
+}
+
+class _ParentWidgetState extends State<ParentWidget> {
+  bool _active = false;
+  void _handleTapboxChanged(bool newValue) {
+    setState(() {
+      _active = newValue;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new Container(
+      child: new TapboxB(
+        active: _active,
+        onChanged: _handleTapboxChanged,
+      ),
+    );
+  }
+}
+
+class TapboxB extends StatelessWidget {
+  TapboxB({Key key, this.active: false, @required this.onChanged})
+      : super(key: key);
+
+  final bool active;
+  final ValueChanged<bool> onChanged;
+
+  void _handleTap() {
+    onChanged(!active);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new MaterialApp(
+      home: new GestureDetector(
+        onTap: _handleTap,
+        child: new Container(
+            child: new Center(
+              child: new Text(
+                active ? 'Active' : 'Inactive',
+                style: new TextStyle(fontSize: 32.0, color: Colors.white),
+              ),
+            ),
+            width: 200.0,
+            height: 200.0,
+            decoration: new BoxDecoration(
+              color: active ? Colors.lightGreen[700] : Colors.grey[600],
+            )),
+      ),
+    );
+  }
+}
