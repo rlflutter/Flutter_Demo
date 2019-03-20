@@ -7,13 +7,42 @@ import 'package:english_words/english_words.dart';
 //void main() => runApp(new ActiveWidget());
 //void main() => runApp(new ParentWidget());
 
-void main() {
+//void main() {
+//  runApp(new MaterialApp(
+//    title: 'my app',
+//    home: new MyScaffold(),
+//  ));
+//}
+
+//void main(){
+//  runApp(new MaterialApp(
+//    title: 'Flutter Tutorial',
+//    home: new TutorialHome(),
+//  ));
+//}
+
+//void main(){
+//  runApp(new MaterialApp(
+//    title: 'Flutter Tutorial',
+//    home: new MyButton(),
+//  ));
+//}
+
+//void main() => runApp(new Counter());
+
+
+void main(){
   runApp(new MaterialApp(
-    title: 'my app',
-    home: new MyScaffold(),
+    title: 'My app',
+    home: new ShoppingList(
+      products: <Product>[
+        new Product(name: 'Eggs'),
+        new Product(name: 'Flour'),
+        new Product(name: 'Chocolate chips'),
+      ],
+    ),
   ));
 }
-
 // 1 继承了 StatelessWidget，这将会使应用本身也成为一个widget
 // 2 Stateless widgets 是不可变的, 这意味着它们的属性不能改变 - 所有的值都是最终的.
 // 3 Stateful widgets 持有的状态可能在widget生命周期中发生变化, 实现一个 stateful widget 至少需要两个类
@@ -455,9 +484,8 @@ class TapboxB extends StatelessWidget {
   }
 }
 
-
 /**
- * 基础使用
+ * 基础 Widget
  */
 
 class MyScaffold extends StatelessWidget {
@@ -475,11 +503,8 @@ class MyScaffold extends StatelessWidget {
           ),
           new Expanded(
               child: new Center(
-                child: new Text(
-                    'Hello, world!'
-                ),
-              )
-          ),
+            child: new Text('Hello, world!'),
+          )),
         ],
       ),
     );
@@ -488,7 +513,7 @@ class MyScaffold extends StatelessWidget {
 
 class MyAppBar extends StatelessWidget {
   MyAppBar({this.title});
-  final Widget title ;
+  final Widget title;
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -501,33 +526,237 @@ class MyAppBar extends StatelessWidget {
           new IconButton(
               icon: new Icon(Icons.menu),
               tooltip: 'Navigation menu',
-              onPressed: null
-          ),
-          new Expanded(
-              child: title
-          ),
+              onPressed: null),
+          new Expanded(child: title),
           new IconButton(
-              icon: new Icon(Icons.search),
-              tooltip: 'Search',
-              onPressed: null
-          )
+              icon: new Icon(Icons.search), tooltip: 'Search', onPressed: null)
         ],
       ),
     );
   }
 }
 
+/**
+ * 使用 Material 组件
+ */
+class TutorialHome extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    //Scaffold是Material中主要的布局组件.
+    return new Scaffold(
+      appBar: new AppBar(
+        leading: new IconButton(
+            icon: new Icon(Icons.menu),
+            tooltip: 'Navigation menu',
+            onPressed: null),
+        title: new Text('Example title'),
+        actions: <Widget>[
+          new IconButton(
+              icon: new Icon(Icons.search), tooltip: 'Search', onPressed: null)
+        ],
+      ),
+      body: new Center(
+        child: new Text('Hello, world!'),
+      ),
+      floatingActionButton: new FloatingActionButton(
+          tooltip: 'Add', // used by assistive technologies
+          child: new Icon(Icons.add),
+          onPressed: null),
+    );
+  }
+}
+
+class MyButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new GestureDetector(
+      onTap: () {
+        print('MyButton was tapped!');
+      },
+      child: new Container(
+        height: 36.0,
+        padding: new EdgeInsets.all(8.0),
+        margin: new EdgeInsets.symmetric(horizontal: 8.0),
+        decoration: new BoxDecoration(
+          borderRadius: new BorderRadius.circular(5.0),
+          color: Colors.lightGreen[500],
+        ),
+        child: new Center(
+          child: new Text('Engage'),
+        ),
+      ),
+    );
+  }
+}
+
+/**
+ * 复杂的界面交互
+ */
+class Counter extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return new _CounterState();
+  }
+}
+
+class _CounterState extends State<Counter> {
+  int _counter = 0;
+
+  void _increment() {
+    setState(() {
+      ++_counter;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new Row(
+      children: <Widget>[
+        new CounterIncrementor(onPressed: _increment),
+        new CounterDisplay(count: _counter),
+      ],
+    );
+  }
+}
+
+class CounterIncrementor extends StatelessWidget {
+  CounterIncrementor({this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new RaisedButton(
+        onPressed: onPressed ,
+        child: new Text('Increment'),
+    );
+  }
+}
+
+class CounterDisplay extends StatelessWidget {
+  CounterDisplay({this.count});
+  final int count;
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new Text('Count: $count');
+  }
+}
+
+
+/**
+ * 整合所有基础widget
+ */
+
+class Product{
+  const Product({this.name});
+  final String name;
+}
+
+typedef void CartChangedCallback(Product product,bool inCart);
+
+class ShoppingListItem extends StatelessWidget{
+
+  ShoppingListItem({Product product,this.inCart,this.onCartChanged}):product = product,
+  super(key: new ObjectKey(product));
+
+
+  final Product product;
+  final bool inCart;
+  final CartChangedCallback onCartChanged;
+
+  Color _getColor(BuildContext context){
+    return inCart ? Colors.black54 : Theme.of(context).primaryColor;
+  }
+
+  TextStyle _getTextStyle(BuildContext context){
+    if(!inCart) return null ;
+
+    return new TextStyle(
+      color: Colors.black54,
+      decoration: TextDecoration.lineThrough,
+    );
+  }
 
 
 
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new ListTile(
+      onTap: (){
+        onCartChanged(product,!inCart);
+      },
 
+      leading: new CircleAvatar(
+        backgroundColor: _getColor(context),
+        child: new Text(product.name[0]),
+      ),
 
+      title: new Text(
+          product.name,style: _getTextStyle(context),
+      ),
 
+    );
+  }
 
+}
 
+class ShoppingList extends StatefulWidget{
 
+  ShoppingList({Key key, this.products}) : super(key:key);
 
+  final List<Product> products;
 
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return new _ShoppingListState();
+  }
+
+}
+
+class _ShoppingListState extends State<ShoppingList>{
+
+  Set<Product> _shoppingCart = new Set<Product>();
+
+  void _handleCartChanged(Product product, bool inCart){
+    setState(() {
+      if(inCart){
+        _shoppingCart.remove(product);
+      }else{
+        _shoppingCart.add(product);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Shopping List'),
+      ),
+
+      body: new ListView(
+        padding: new EdgeInsets.symmetric(vertical: 8.0),
+        children: widget.products.map((Product product) {
+          return new ShoppingListItem(
+            product: product,
+            inCart: _shoppingCart.contains(product),
+            onCartChanged: _handleCartChanged,
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+}
 
 
 
